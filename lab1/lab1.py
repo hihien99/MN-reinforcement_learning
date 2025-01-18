@@ -302,7 +302,22 @@ def manipulation_3(n, beta):
     plt.legend(bbox_to_anchor=(0.6, 0.5))
     plt.xlabel("Runs")
     plt.ylabel("Average Reward")
-    plt.title("Average $\epsilon$-greedy and greedy rewards with different realizations")
+    plt.title("Average $\epsilon$-greedy and greedy rewards with different epsilon and decay policy.")
+    plt.show()
+
+
+def manipulation_4():
+    # manipulation 4
+    oiv_bandit_rewards, oiv_bandit_0_rewards, oiv_bandit_01_rewards = man4(k=k, runs=runs, realization=1000, eps=eps)
+    plt.figure(figsize=(14,8))
+    plt.plot(oiv_bandit_rewards, label="$greedy$")
+    plt.plot(oiv_bandit_0_rewards, label="$eps=0.1$")
+    plt.plot(oiv_bandit_01_rewards, label="$eps=0.01$")
+    
+    plt.legend(bbox_to_anchor=(0.6, 0.5))
+    plt.xlabel("Runs")
+    plt.ylabel("Average Reward")
+    plt.title("Average $\epsilon$-greedy and greedy rewards with different epsilon and policy of optimistic initialization")
     plt.show()
 
 
@@ -318,16 +333,6 @@ if __name__ == "__main__":
     # manipulation_1()
     # manipulation_2()
     # manipulation_3(n=n, beta=beta)
+    manipulation_4()
 
-    # manipulation 4
-    oiv_bandit_rewards, oiv_bandit_0_rewards, oiv_bandit_01_rewards = man4(k=k, runs=runs, realization=1000, eps=eps)
-    plt.figure(figsize=(14,8))
-    plt.plot(oiv_bandit_rewards, label="$greedy$")
-    plt.plot(oiv_bandit_0_rewards, label="$eps=0.1$")
-    plt.plot(oiv_bandit_01_rewards, label="$eps=0.01$")
     
-    plt.legend(bbox_to_anchor=(0.6, 0.5))
-    plt.xlabel("Runs")
-    plt.ylabel("Average Reward")
-    plt.title("Average $\epsilon$-greedy and greedy rewards with different realizations")
-    plt.show()
