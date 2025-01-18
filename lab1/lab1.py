@@ -69,7 +69,7 @@ def man2(k, runs, realizations, eps):
     # run experiments
     for i in range(realizations):
         # initialize bandit
-        eps_1 = eps_bandit(k=k, eps=0.0, runs=runs, mu="sequence")
+        eps_1 = eps_bandit(k=k, eps=0.1, runs=runs, mu="sequence")
         eps_0 = eps_bandit(k=k, eps=0.0, runs=runs, mu=eps_1.mu.copy())
         eps_01 = eps_bandit(k=k, eps=0.01, runs=runs, mu=eps_1.mu.copy())
 
@@ -148,7 +148,7 @@ def man3(k, runs, realizations, eps, beta):
     # run experiments
     for i in range(realizations):
         # initialize bandit
-        eps_1 = eps_bandit(k=k, eps=eps, runs=runs)
+        eps_1 = eps_bandit(k=k, eps=0.1, runs=runs)
         eps_0 = eps_bandit(k=k, eps=0.0, runs=runs, mu=eps_1.mu.copy())
         eps_01 = eps_bandit(k=k, eps=0.01, runs=runs, mu=eps_1.mu.copy())
 
@@ -167,7 +167,7 @@ def man3(k, runs, realizations, eps, beta):
         rewards = (eps_0_rewards, eps_1_rewards, eps_01_rewards)
 
         for j, bet in enumerate(beta):
-            eps_1_decay = eps_decay_bandit(k=k, eps=0.0, beta=bet, runs=runs)
+            eps_1_decay = eps_decay_bandit(k=k, eps=0.1, beta=bet, runs=runs)
             eps_0_decay = eps_decay_bandit(k=k, eps=0.0, beta=bet, runs=runs, mu=eps_1.mu.copy())
             eps_01_decay = eps_decay_bandit(k=k, eps=0.01, beta=bet, runs=runs, mu=eps_1.mu.copy())
 
@@ -185,72 +185,101 @@ def man3(k, runs, realizations, eps, beta):
             rewards_decays.append(rewards_decay)
     
     return eps_1_rewards, eps_0_rewards, eps_01_rewards, rewards, rewards_decays
-    
 
-if __name__ == "__main__":
 
-    k = 10
-    runs = 1000
-    eps = 0.1
+def man4(k, runs, realization, eps):
+    oiv_bandit_rewards = np.zeros(runs)
+    oiv_bandit_0_rewards = np.zeros(runs)
+    oiv_bandit_01_rewards = np.zeros(runs)
 
+    for i in range(realization):
+        oiv_bandit = eps_bandit(k=k, eps=0.0, runs=runs)
+        oiv_bandit.k_reward = np.repeat(5., k)
+        oiv_bandit.k_n = np.ones(k)
+
+        oiv_bandit_0 = eps_bandit(k=k, eps=0.1, runs=runs)
+        oiv_bandit_0.k_reward = np.repeat(5., k)
+        oiv_bandit_0.k_n = np.ones(k)
+
+        oiv_bandit_01 = eps_bandit(k=k, eps=0.01, runs=runs)
+        oiv_bandit_01.k_reward = np.repeat(5., k)
+        oiv_bandit_01.k_n = np.ones(k)
+
+        # run experiments
+        oiv_bandit.run()
+        oiv_bandit_0.run()
+        oiv_bandit_01.run()
+
+        # update the long-term rewards
+        oiv_bandit_rewards = oiv_bandit_rewards + (
+            oiv_bandit.reward - oiv_bandit_rewards) / (i + 1)
+        oiv_bandit_0_rewards = oiv_bandit_0_rewards + (
+            oiv_bandit_0.reward - oiv_bandit_0_rewards) / (i + 1)
+        oiv_bandit_01_rewards = oiv_bandit_01_rewards + (
+            oiv_bandit_01.reward - oiv_bandit_01_rewards) / (i + 1)
+        
+    return oiv_bandit_rewards, oiv_bandit_0_rewards, oiv_bandit_01_rewards
+
+
+def manipulation_1():
     # manipulation 1
-    # eps_1_real1, eps_0_real1, eps_01_real1 = man1(k=k, runs=runs, realizations=10, eps=eps)
-    # eps_1_real2, eps_0_real2, eps_01_real2 = man1(k=k, runs=runs, realizations=100, eps=eps)
-    # eps_1_real3, eps_0_real3, eps_01_real3 = man1(k=k, runs=runs, realizations=1000, eps=eps)
+    eps_1_real1, eps_0_real1, eps_01_real1 = man1(k=k, runs=runs, realizations=10, eps=eps)
+    eps_1_real2, eps_0_real2, eps_01_real2 = man1(k=k, runs=runs, realizations=100, eps=eps)
+    eps_1_real3, eps_0_real3, eps_01_real3 = man1(k=k, runs=runs, realizations=1000, eps=eps)
     
-    # plt.figure(figsize=(14,8))
-    # plt.plot(eps_1_real1, label="$arm1, realization=10$")
-    # plt.plot(eps_1_real2, label="$arm1, realization=100$")
-    # plt.plot(eps_1_real3, label="$arm1, realization=1000$")
+    plt.figure(figsize=(14,8))
+    plt.plot(eps_1_real1, label="$arm1, realization=10$")
+    plt.plot(eps_1_real2, label="$arm1, realization=100$")
+    plt.plot(eps_1_real3, label="$arm1, realization=1000$")
 
-    # plt.plot(eps_0_real1, label="$arm0, realization=10$")
-    # plt.plot(eps_0_real2, label="$arm0, realization=100$")
-    # plt.plot(eps_0_real3, label="$arm0, realization=1000$")
+    plt.plot(eps_0_real1, label="$arm0, realization=10$")
+    plt.plot(eps_0_real2, label="$arm0, realization=100$")
+    plt.plot(eps_0_real3, label="$arm0, realization=1000$")
 
-    # plt.plot(eps_01_real1, label="$arm01, realization=10$")
-    # plt.plot(eps_01_real2, label="$arm01, realization=100$")
-    # plt.plot(eps_01_real3, label="$arm01, realization=1000$")
+    plt.plot(eps_01_real1, label="$arm01, realization=10$")
+    plt.plot(eps_01_real2, label="$arm01, realization=100$")
+    plt.plot(eps_01_real3, label="$arm01, realization=1000$")
     
-    # plt.legend(bbox_to_anchor=(0.6, 0.5))
-    # plt.xlabel("Runs")
-    # plt.ylabel("Average Reward")
-    # plt.title("Average $\epsilon$-greedy and greedy rewards with different realizations")
-    # plt.show()
+    plt.legend(bbox_to_anchor=(0.6, 0.5))
+    plt.xlabel("Runs")
+    plt.ylabel("Average Reward")
+    plt.title("Average $\epsilon$-greedy and greedy rewards with different realizations")
+    plt.show()
 
 
-    # manipulation 2 
-    # rewards_man2, selection_man2 = man2(k=k, runs=runs, realizations=1000, eps=eps)
-    # eps_1_rewards, eps_0_rewards, eps_01_rewards, rewards = man1(k=k, runs=runs, realizations=1000, eps=eps)
+def manipulation_2(): 
+    rewards_man2, selection_man2 = man2(k=k, runs=runs, realizations=1000, eps=eps)
+    eps_1_rewards, eps_0_rewards, eps_01_rewards, rewards = man1(k=k, runs=runs, realizations=1000, eps=eps)
 
-    # print("performance manipulation 1: ", rewards[0].shape)
-    # print("performance manipulation 2: ", len(rewards_man2))
-    # print("selection in manipulation 2: ", selection_man2, selection_man2[0].shape)
+    print("performance manipulation 1: ", rewards[0].shape)
+    print("performance manipulation 2: ", len(rewards_man2))
+    print("selection in manipulation 2: ", selection_man2, selection_man2[0].shape)
 
     # get the chart
-    # bins = np.linspace(0, k-1, k)
-    # plt.figure(figsize=(12, 8))
-    # plt.bar(bins, selection_man2[0], width = 0.33, color="b", label="$\epsilon=0$")
-    # plt.bar(bins+0.33, selection_man2[2], width = 0.33, color="g", label="$\epsilon=0.01$")
-    # plt.bar(bins+0.66, selection_man2[1], width = 0.33, color="r", label="$\epsilon=0.1$")
-    # plt.legend(bbox_to_anchor=(1.2, 0.5))
-    # plt.xlim([0,k])
-    # plt.title("Actions Selected by Each Algorithm")
-    # plt.xlabel("Action")
-    # plt.ylabel("Number of Actions Taken")
-    # plt.show()
+    bins = np.linspace(0, k-1, k)
+    plt.figure(figsize=(12, 8))
+    plt.bar(bins, selection_man2[0], width = 0.33, color="b", label="$\epsilon=0$")
+    plt.bar(bins+0.33, selection_man2[2], width = 0.33, color="g", label="$\epsilon=0.01$")
+    plt.bar(bins+0.66, selection_man2[1], width = 0.33, color="r", label="$\epsilon=0.1$")
+    plt.legend(bbox_to_anchor=(1.2, 0.5))
+    plt.xlim([0,k])
+    plt.title("Actions Selected by Each Algorithm")
+    plt.xlabel("Action")
+    plt.ylabel("Number of Actions Taken")
+    plt.show()
 
     # get the table
-    # opt_per = np.array([selection_man2[0], selection_man2[2], selection_man2[1]]) / runs * 100
-    # df = pd.DataFrame(opt_per,
-    #                   index=['$\epsilon=0$', '$\epsilon=0.01$', "$\epsilon=0.1$"],
-    #                   columns=["a = " + str(x) for x in range(0, k)])
-    # print("Percentage of actions selected: " + "\n", df)
+    opt_per = np.array([selection_man2[0], selection_man2[2], selection_man2[1]]) / runs * 100
+    df = pd.DataFrame(opt_per,
+                      index=['$\epsilon=0$', '$\epsilon=0.01$', "$\epsilon=0.1$"],
+                      columns=["a = " + str(x) for x in range(0, k)])
+    print("Percentage of actions selected: " + "\n", df)
 
 
+def manipulation_3(n, beta):
     # manipulation 3
-    n = 100
-    beta = [0.01, 0.05, 0.1]  # Different values of beta
-    # man3_plot(n=n, beta=beta)
+    # Different values of beta
+    man3_plot(n=n, beta=beta)
 
     eps_1_rewards, eps_0_rewards, eps_01_rewards, rewards, rewards_decays = man3(k=k, runs=runs, realizations=100, eps=eps, beta=beta)
     plt.figure(figsize=(14,8))
@@ -262,7 +291,7 @@ if __name__ == "__main__":
     plt.plot(rewards_decays[0][1], label="$abandit0, decay_beta=0.01$")
     plt.plot(rewards_decays[0][2], label="$abandit01, decay_beta=0.01$")
 
-    plt.plot(rewards_decays[1][0], label="$abandit1, decay_beta=0.01$")
+    plt.plot(rewards_decays[1][0], label="l$abandit1, decay_beta=0.01$")
     plt.plot(rewards_decays[1][1], label="$abandit0, decay_beta=0.05$")
     plt.plot(rewards_decays[1][2], label="$abandit01, decay_beta=0.05$")
 
@@ -277,4 +306,28 @@ if __name__ == "__main__":
     plt.show()
 
 
+if __name__ == "__main__":
 
+    k = 10
+    runs = 1000
+    eps = 0.1
+
+    n = 100
+    beta = [0.01, 0.05, 0.1]
+
+    # manipulation_1()
+    # manipulation_2()
+    # manipulation_3(n=n, beta=beta)
+
+    # manipulation 4
+    oiv_bandit_rewards, oiv_bandit_0_rewards, oiv_bandit_01_rewards = man4(k=k, runs=runs, realization=1000, eps=eps)
+    plt.figure(figsize=(14,8))
+    plt.plot(oiv_bandit_rewards, label="$greedy$")
+    plt.plot(oiv_bandit_0_rewards, label="$eps=0.1$")
+    plt.plot(oiv_bandit_01_rewards, label="$eps=0.01$")
+    
+    plt.legend(bbox_to_anchor=(0.6, 0.5))
+    plt.xlabel("Runs")
+    plt.ylabel("Average Reward")
+    plt.title("Average $\epsilon$-greedy and greedy rewards with different realizations")
+    plt.show()
