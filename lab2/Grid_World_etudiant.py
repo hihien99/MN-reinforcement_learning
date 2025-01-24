@@ -108,6 +108,7 @@ def policy_iteration(policy,gamma,theta=1e-3):
         
         # Policy evaluation
         V = policy_eval(policy,gamma,theta)
+        print("V_before improvement: ", V)
             
         # Policy improvement step
         for s in range(0,len(states)):
@@ -127,6 +128,7 @@ def policy_iteration(policy,gamma,theta=1e-3):
                 policy_stable = False
 
         V = policy_eval(policy,gamma,theta)
+        print("V_after improvement: ", V)
         display_value_policy(V,policy)
                 
     return policy
@@ -139,7 +141,33 @@ def value_iteration(gamma,theta=1e-3):
     Outputs : V : optimal value function
               policy : associated policy
     """    
+    # Initialization
+    V = [0 for state in states]
+    policy = [(0, 0) for state in states]
+    Delta = float("inf")
 
+    while Delta > theta:
+        Delta = 0
+        
+        for s in range(0, len(states)):
+            # Back-up of V(s)
+            v = V[s]
+            V[s] = 0
+            q = []
+            for action in actions:
+                tmp = 0
+                for sp in range(0, len(states)):
+                    tmp += transition_prob(states[s],action,states[sp])\
+                        *(reward(states[s],action) + gamma * V[sp])
+                q.append(tmp)
+            
+            V[s] = max(q)
+            Delta = max(Delta, abs(v-V[s]))
+
+            idx = q.index(max(q))
+            policy[s] = actions[idx]
+
+    return V, policy
 
                 
 # Displays the Value function
@@ -179,15 +207,10 @@ for i in range(len(states)):
 gamma = 0.9
 policy_ = policy_iteration(policy=policy, gamma=gamma)
 
-#   evaluates optimal policy 
-
-
-#   display
-
-
 # Value iteration algorithm
+gamma = 0.9
+V , policy = value_iteration(gamma=gamma)
+display_value_policy(V, policy)
 
-
-#   display
 
 
