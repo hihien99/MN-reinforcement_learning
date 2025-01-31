@@ -152,41 +152,41 @@ class cliff_walking:
         plt.show()
 
 
-# def SARSA(env,alpha=0.1,gamma=0.9, nb_episodes=2000):
-#     """
-#     Parameters
-#     ----------
-#     env : considered environment
-#     alpha : learning rate
-#     gamma : discount factor
+def SARSA(env,alpha=0.1,gamma=0.9, nb_episodes=2000):
+    """
+    Parameters
+    ----------
+    env : considered environment
+    alpha : learning rate
+    gamma : discount factor
 
-#     Returns
-#     -------
-#     Q-table
+    Returns
+    -------
+    Q-table
 
-#     """
-#     # Initialization of the Q-table
-#     Q = [[0 for action in env.action_space] for state in env.state_space]
+    """
+    # Initialization of the Q-table
+    Q = [[0 for action in env.action_space] for state in env.state_space]
     
-#     # initialization of the return
-#     acc_reward = np.zeros(nb_episodes)
+    # initialization of the return
+    acc_reward = np.zeros(nb_episodes)
     
-#     eps = 0.01
+    eps = 0.01
     
-#     for ep in range(nb_episodes):
-#         s_t,finished = env.reset()
+    for ep in range(nb_episodes):
+        s_t,finished = env.reset()
         
-#         # Initial random action selection
-# 	# TO FILL
+        # Initial random action selection
+	# TO FILL
 
         
-#         while finished == False:
-# 	# TO FILL
+        while finished == False:
+	# TO FILL
 
-#     plt.plot(acc_reward)
-#     plt.show()    
+    plt.plot(acc_reward)
+    plt.show()    
         
-#     return Q
+    return Q
     
 # Main function
 
